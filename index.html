@@ -2,337 +2,271 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Магазин Фарруха</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0f0f13;
+  --card:#1a1a22;
+  --text:#ffffff;
+  --muted:rgba(255,255,255,0.55);
+  --radius:20px;
+}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;padding-bottom:80px}
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  background: var(--tg-theme-bg-color, #1c1c1e);
-  color: var(--tg-theme-text-color, #ffffff);
-  padding-bottom: 80px;
-  min-height: 100vh;
+/* HEADER */
+.hero{padding:32px 16px 16px;text-align:center}
+.hero h1{font-size:26px;font-weight:800;background:linear-gradient(135deg,#fff,#aaa);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero p{color:var(--muted);font-size:14px;margin-top:6px}
+
+/* SECTION */
+.section-label{font-size:17px;font-weight:700;padding:20px 16px 10px;display:flex;align-items:center;gap:8px}
+
+/* CARD */
+.card{margin:0 16px 20px;border-radius:var(--radius);overflow:hidden;box-shadow:0 12px 40px rgba(0,0,0,0.4);opacity:0;transform:translateY(24px);transition:opacity .45s ease,transform .45s ease}
+.card.visible{opacity:1;transform:translateY(0)}
+.card:active{transform:scale(0.98)}
+
+.card-top{padding:24px 20px 20px;position:relative;min-height:160px}
+.card-emoji{font-size:44px;line-height:1;margin-bottom:10px;display:block}
+.card-label{font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.7);margin-bottom:6px}
+.card-title{font-size:20px;font-weight:800;color:#fff;line-height:1.25;margin-bottom:8px}
+.card-desc{font-size:13px;color:rgba(255,255,255,0.75);line-height:1.5}
+
+.price-tag{
+  position:absolute;top:20px;right:16px;
+  background:rgba(255,255,255,0.18);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.25);
+  border-radius:50px;padding:5px 14px;
+  font-size:15px;font-weight:800;color:#fff;white-space:nowrap
 }
 
-.header {
-  padding: 20px 16px 10px;
-  text-align: center;
-}
-.header h1 { font-size: 24px; font-weight: 700; }
-.header p { font-size: 14px; opacity: 0.6; margin-top: 4px; }
+.stars{margin-top:12px;display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,0.85)}
+.star-icon{font-size:14px}
 
-.section-title {
-  font-size: 18px;
-  font-weight: 700;
-  padding: 16px 16px 8px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
+.timer-box{
+  display:inline-flex;align-items:center;gap:6px;
+  margin-top:10px;background:rgba(255,60,60,0.25);
+  border:1px solid rgba(255,60,60,0.4);
+  border-radius:10px;padding:5px 12px;
+  font-size:12px;font-weight:600;color:#fff
 }
 
-.card {
-  margin: 0 16px 16px;
-  border-radius: 20px;
-  overflow: hidden;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-  animation: fadeIn 0.4s ease;
-  transform: translateZ(0);
-  transition: transform 0.1s;
+/* CARD BOTTOM */
+.card-bottom{background:var(--card);padding:16px}
+.btn{
+  display:block;width:100%;padding:14px 16px;
+  border:none;border-radius:12px;
+  font-size:15px;font-weight:700;
+  cursor:pointer;text-align:center;
+  transition:opacity .15s,transform .1s;
+  text-decoration:none;color:#fff;
+  margin-bottom:10px
 }
-.card:active { transform: scale(0.97); }
-
-.card-header {
-  padding: 24px 20px 20px;
-  position: relative;
+.btn:last-child{margin-bottom:0}
+.btn:active{opacity:.75;transform:scale(0.97)}
+.btn-outline{
+  background:transparent;
+  border:2px solid rgba(255,255,255,0.2);
+  color:rgba(255,255,255,0.85)
 }
-.card-emoji { font-size: 40px; margin-bottom: 10px; display: block; }
-.card-name { font-size: 13px; font-weight: 600; opacity: 0.85; text-transform: uppercase; letter-spacing: 1px; color: rgba(255,255,255,0.8); }
-.card-title { font-size: 20px; font-weight: 800; color: #fff; margin: 6px 0; line-height: 1.2; }
-.card-desc { font-size: 14px; color: rgba(255,255,255,0.8); line-height: 1.4; }
-
-.price-badge {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(255,255,255,0.25);
-  backdrop-filter: blur(10px);
-  border-radius: 50px;
-  padding: 6px 14px;
-  font-size: 16px;
-  font-weight: 800;
-  color: #fff;
-}
-.price-free { background: rgba(52,199,89,0.4); }
-
-.stars {
-  margin-top: 10px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-size: 13px;
-  color: rgba(255,255,255,0.9);
-}
-.stars span { font-size: 16px; }
-
-.timer {
-  margin-top: 10px;
-  background: rgba(255,59,48,0.3);
-  border-radius: 10px;
-  padding: 6px 12px;
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
-  display: inline-block;
-}
-
-.card-body { padding: 16px; background: var(--tg-theme-secondary-bg-color, #2c2c2e); }
-
-.btn {
-  display: block;
-  width: 100%;
-  padding: 14px;
-  border: none;
-  border-radius: 12px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  margin-bottom: 10px;
-  transition: opacity 0.2s;
-}
-.btn:active { opacity: 0.8; }
-.btn-primary { background: var(--tg-theme-button-color, #007aff); color: #fff; }
-.btn-secondary {
-  background: transparent;
-  border: 2px solid var(--tg-theme-button-color, #007aff);
-  color: var(--tg-theme-button-color, #007aff);
-}
-
-.btn-row { display: flex; gap: 8px; }
-.btn-row .btn { flex: 1; padding: 12px 8px; font-size: 14px; }
+.btn-row{display:flex;gap:10px}
+.btn-row .btn{flex:1;padding:12px 8px;font-size:13px}
 
 /* Gradients */
-.grad-purple { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
-.grad-pink   { background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); }
-.grad-blue   { background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); }
-.grad-green  { background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); }
-.grad-orange { background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); }
-.grad-lav    { background: linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%); }
-.grad-red    { background: linear-gradient(135deg, #f77062 0%, #fe5196 100%); }
+.g-purple{background:linear-gradient(135deg,#667eea,#764ba2)}
+.g-pink  {background:linear-gradient(135deg,#f093fb,#f5576c)}
+.g-blue  {background:linear-gradient(135deg,#4facfe,#00f2fe)}
+.g-green {background:linear-gradient(135deg,#43e97b,#38f9d7)}
+.g-orange{background:linear-gradient(135deg,#fa709a,#fee140)}
+.g-lav   {background:linear-gradient(135deg,#a18cd1,#fbc2eb)}
+.g-red   {background:linear-gradient(135deg,#f77062,#fe5196)}
 
-.bottom-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 12px 16px;
-  background: var(--tg-theme-secondary-bg-color, #2c2c2e);
-  border-top: 1px solid rgba(255,255,255,0.1);
-  display: flex;
-  gap: 10px;
-  z-index: 100;
+/* BOTTOM BAR */
+.bottom-bar{
+  position:fixed;bottom:0;left:0;right:0;z-index:99;
+  background:rgba(15,15,19,0.95);
+  backdrop-filter:blur(16px);
+  -webkit-backdrop-filter:blur(16px);
+  border-top:1px solid rgba(255,255,255,0.08);
+  padding:10px 16px 14px;
+  display:flex;gap:10px
 }
-.bottom-bar .btn { margin: 0; flex: 1; padding: 12px; font-size: 14px; }
+.bottom-bar .btn{margin:0;flex:1;padding:13px;font-size:14px}
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-.card:nth-child(2) { animation-delay: 0.1s; }
-.card:nth-child(3) { animation-delay: 0.2s; }
+/* NEW badge */
+.badge{display:inline-block;background:#ff3b30;color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:20px;vertical-align:middle;margin-left:6px}
 
-.badge-new {
-  display: inline-block;
-  background: #ff3b30;
-  color: #fff;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 20px;
-  margin-left: 6px;
-  vertical-align: middle;
+@media(min-width:500px){
+  body{max-width:480px;margin:0 auto}
 }
 </style>
 </head>
 <body>
 
-<div class="header">
+<div class="hero">
   <h1>🛍️ Магазин Фарруха</h1>
-  <p>Продукты, которые меняют жизнь</p>
+  <p>Курсы, наставничество и сервисы</p>
 </div>
 
-<!-- POPULAR -->
-<div class="section-title">🔥 Популярное</div>
+<!-- ───── ПОПУЛЯРНОЕ ───── -->
+<div class="section-label">🔥 Популярное</div>
 
-<!-- Aiden -->
+<!-- 1. Aiden -->
 <div class="card">
-  <div class="card-header grad-purple">
+  <div class="card-top g-purple">
     <span class="card-emoji">🤖</span>
-    <div class="price-badge">$29</div>
-    <div class="card-name">Aiden Guide</div>
-    <div class="card-title">AI сотрудник который работает 24/7</div>
-    <div class="card-desc">Настрой один раз — отвечает клиентам, не забывает, не устаёт</div>
-    <div class="stars"><span>⭐⭐⭐⭐⭐</span> 4.9 · 127 отзывов</div>
-    <div class="timer" id="timer">⏰ Цена повышается через ...</div>
+    <div class="price-tag">$29</div>
+    <div class="card-label">Aiden Guide</div>
+    <div class="card-title">AI сотрудник, который работает 24/7</div>
+    <div class="card-desc">Настрой один раз — отвечает клиентам, не устаёт, не забывает. 500+ предпринимателей уже используют.</div>
+    <div class="stars"><span class="star-icon">⭐</span> 4.9 · 127 отзывов</div>
+    <div class="timer-box">⏰ Цена повышается через <span id="timer">--:--:--</span></div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://buy.stripe.com/eVqbJ17rCabjejz8PR9sk0q')">🛒 Купить за $29</button>
+  <div class="card-bottom">
+    <a class="btn g-purple" href="https://buy.stripe.com/eVqbJ17rCabjejz8PR9sk0q" target="_blank">🛒 Купить за $29</a>
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="open('https://mybotbestagent-maker.github.io/aiden-guide/')">📖 Подробнее</button>
-      <button class="btn btn-secondary" onclick="open('https://t.me/Farrukh_2015')">💬 Спросить</button>
+      <a class="btn btn-outline" href="https://mybotbestagent-maker.github.io/aiden-guide/" target="_blank">📖 Подробнее</a>
+      <a class="btn btn-outline" href="https://t.me/Farrukh_2015" target="_blank">💬 Спросить</a>
     </div>
   </div>
 </div>
 
-<!-- AI Avatar -->
+<!-- 2. AI Avatar -->
 <div class="card">
-  <div class="card-header grad-pink">
+  <div class="card-top g-pink">
     <span class="card-emoji">🎭</span>
-    <div class="price-badge">$19</div>
-    <div class="card-name">AI Avatar Course</div>
-    <div class="card-title">Создай AI-аватар за 1 вечер</div>
-    <div class="card-desc">HeyGen + ElevenLabs — твоё лицо говорит без съёмки</div>
-    <div class="stars"><span>⭐⭐⭐⭐⭐</span> 4.8 · 89 отзывов</div>
+    <div class="price-tag">$19</div>
+    <div class="card-label">AI Avatar Course</div>
+    <div class="card-title">Создай AI‑аватар за 1 вечер</div>
+    <div class="card-desc">HeyGen + ElevenLabs. Твоё лицо говорит без съёмки. Идеально для Reels и курсов.</div>
+    <div class="stars"><span class="star-icon">⭐</span> 4.8 · 89 отзывов</div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://t.me/AiAvatar_1bot')">🛒 Купить за $19</button>
+  <div class="card-bottom">
+    <a class="btn g-pink" href="https://t.me/AiAvatar_1bot" target="_blank">🛒 Купить за $19</a>
     <div class="btn-row">
-      <button class="btn btn-secondary" onclick="open('https://mybotbestagent-maker.github.io/ai-avatar-course/')">📖 Подробнее</button>
-      <button class="btn btn-secondary" onclick="open('https://t.me/Farrukh_2015')">💬 Спросить</button>
+      <a class="btn btn-outline" href="https://mybotbestagent-maker.github.io/ai-avatar-course/" target="_blank">📖 Подробнее</a>
+      <a class="btn btn-outline" href="https://t.me/Farrukh_2015" target="_blank">💬 Спросить</a>
     </div>
   </div>
 </div>
 
-<!-- 7 STEPS -->
+<!-- 3. 7 STEPS -->
 <div class="card">
-  <div class="card-header grad-blue">
+  <div class="card-top g-blue">
     <span class="card-emoji">📚</span>
-    <div class="price-badge">$23</div>
-    <div class="card-name">Мини-курс 7 STEPS <span class="badge-new">NEW</span></div>
+    <div class="price-tag">$23</div>
+    <div class="card-label">Мини-курс 7 STEPS <span class="badge">NEW</span></div>
     <div class="card-title">Стабильный поток клиентов за 7 шагов</div>
-    <div class="card-desc">Для эмигрантов и хендименов, которые хотят клиентов что платят много</div>
-    <div class="stars"><span>⭐⭐⭐⭐⭐</span> 4.7 · 43 отзыва</div>
+    <div class="card-desc">Для эмигрантов и хендименов в США. Проверенная система привлечения клиентов.</div>
+    <div class="stars"><span class="star-icon">⭐</span> 4.7 · 43 отзыва</div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://buy.stripe.com/eVqcN5eU41EN4IZ2rt9sk07')">🛒 Купить за $23</button>
-    <button class="btn btn-secondary" onclick="open('https://t.me/Farrukh_2015')">💬 Узнать больше</button>
+  <div class="card-bottom">
+    <a class="btn g-blue" href="https://buy.stripe.com/eVqcN5eU41EN4IZ2rt9sk07" target="_blank">🛒 Купить за $23</a>
+    <a class="btn btn-outline" href="https://t.me/Farrukh_2015" target="_blank">💬 Узнать подробности</a>
   </div>
 </div>
 
-<!-- MENTORING -->
-<div class="section-title">🎓 Наставничество</div>
+<!-- ───── НАСТАВНИЧЕСТВО ───── -->
+<div class="section-label">🎓 Наставничество</div>
 
-<!-- Consultation -->
+<!-- 4. Консультация -->
 <div class="card">
-  <div class="card-header grad-green">
+  <div class="card-top g-green">
     <span class="card-emoji">🎯</span>
-    <div class="price-badge">$510</div>
-    <div class="card-name">Консультация 1:1</div>
-    <div class="card-title">Разбор твоей ситуации + план действий</div>
-    <div class="card-desc">Онлайн или офлайн · Разбор бизнеса · 7 дней сопровождения</div>
+    <div class="price-tag">$510</div>
+    <div class="card-label">Консультация 1:1</div>
+    <div class="card-title">Личный разбор твоего бизнеса</div>
+    <div class="card-desc">Онлайн или офлайн. Разбор ситуации, план действий, 7 дней сопровождения после встречи.</div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://t.me/Farrukh_2015')">📞 Записаться</button>
-    <button class="btn btn-secondary" onclick="open('https://www.handymendad.com/')">📖 Подробнее</button>
+  <div class="card-bottom">
+    <a class="btn g-green" href="https://t.me/Farrukh_2015" target="_blank">📞 Записаться</a>
+    <a class="btn btn-outline" href="https://www.handymendad.com/" target="_blank">📖 Подробнее на сайте</a>
   </div>
 </div>
 
-<!-- Online mentoring -->
+<!-- 5. Онлайн -->
 <div class="card">
-  <div class="card-header grad-orange">
+  <div class="card-top g-orange">
     <span class="card-emoji">💼</span>
-    <div class="price-badge">$2,010</div>
-    <div class="card-name">Наставничество Онлайн</div>
-    <div class="card-title">5 консультаций + поддержка 24/7</div>
-    <div class="card-desc">30 дней сопровождения · Чат в любое время · Реальные результаты</div>
+    <div class="price-tag">$2 010</div>
+    <div class="card-label">Наставничество Онлайн</div>
+    <div class="card-title">5 консультаций + поддержка 30 дней</div>
+    <div class="card-desc">Поддержка 24/7. Реальные изменения в бизнесе за месяц. Работаем удалённо.</div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://t.me/Farrukh_2015')">📞 Записаться</button>
-    <button class="btn btn-secondary" onclick="open('https://www.handymendad.com/')">📖 Подробнее</button>
+  <div class="card-bottom">
+    <a class="btn g-orange" href="https://t.me/Farrukh_2015" target="_blank">📞 Записаться</a>
+    <a class="btn btn-outline" href="https://www.handymendad.com/" target="_blank">📖 Подробнее на сайте</a>
   </div>
 </div>
 
-<!-- Offline mentoring -->
+<!-- 6. Оффлайн -->
 <div class="card">
-  <div class="card-header grad-lav">
+  <div class="card-top g-lav">
     <span class="card-emoji">🏆</span>
-    <div class="price-badge">$2,510</div>
-    <div class="card-name">Наставничество Оффлайн</div>
+    <div class="price-tag">$2 510</div>
+    <div class="card-label">Наставничество Оффлайн</div>
     <div class="card-title">5 личных встреч в Майами</div>
-    <div class="card-desc">Работа вживую · 30 дней сопровождения · Максимальный результат</div>
+    <div class="card-desc">Максимальный результат. Работа вживую в Майами + 30 дней сопровождения после.</div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://t.me/Farrukh_2015')">📞 Записаться</button>
-    <button class="btn btn-secondary" onclick="open('https://www.handymendad.com/')">📖 Подробнее</button>
+  <div class="card-bottom">
+    <a class="btn g-lav" href="https://t.me/Farrukh_2015" target="_blank">📞 Записаться</a>
+    <a class="btn btn-outline" href="https://www.handymendad.com/" target="_blank">📖 Подробнее на сайте</a>
   </div>
 </div>
 
-<!-- SERVICES -->
-<div class="section-title">🔨 Сервисы</div>
+<!-- ───── СЕРВИСЫ ───── -->
+<div class="section-label">🔨 Сервисы</div>
 
-<!-- Handyman -->
+<!-- 7. Handyman -->
 <div class="card">
-  <div class="card-header grad-red">
+  <div class="card-top g-red">
     <span class="card-emoji">🔨</span>
-    <div class="price-badge">$80/ч</div>
-    <div class="card-name">Handyman Gold Hands</div>
-    <div class="card-title">Мастер на час в США</div>
-    <div class="card-desc">$80/час · мин. 2 часа · 10 городов: Miami, Austin, Atlanta, Philadelphia, Charlotte, DC, Chicago, Tampa, Baltimore</div>
+    <div class="price-tag">$80/ч</div>
+    <div class="card-label">Handyman Gold Hands</div>
+    <div class="card-title">Мастер на час в 10 городах США</div>
+    <div class="card-desc">$80/час · минимум 2 часа · Miami, Austin, Atlanta, Philadelphia, Charlotte, DC, Chicago, Tampa, Baltimore</div>
   </div>
-  <div class="card-body">
-    <button class="btn btn-primary" onclick="open('https://handymangoldhands.com')">📞 Бесплатный звонок</button>
-    <button class="btn btn-secondary" onclick="open('https://t.me/Farrukh_2015')">💬 Написать</button>
+  <div class="card-bottom">
+    <a class="btn g-red" href="https://handymangoldhands.com" target="_blank">🌐 Перейти на сайт</a>
+    <a class="btn btn-outline" href="https://t.me/Farrukh_2015" target="_blank">💬 Написать напрямую</a>
   </div>
 </div>
 
-<!-- Bottom bar -->
+<!-- BOTTOM BAR -->
 <div class="bottom-bar">
-  <button class="btn btn-primary" onclick="open('https://t.me/Farrukh_2015')">💬 Поддержка</button>
-  <button class="btn btn-secondary" onclick="open('https://t.me/Farrukh_2015')">💸 Благодарность</button>
+  <a class="btn g-purple" href="https://t.me/Farrukh_2015" target="_blank">💬 Поддержка</a>
+  <button class="btn btn-outline" onclick="window.scrollTo({top:0,behavior:'smooth'})">⬆️ Наверх</button>
 </div>
 
 <script>
-// Telegram WebApp init
-if (window.Telegram && window.Telegram.WebApp) {
-  Telegram.WebApp.ready();
-  Telegram.WebApp.expand();
-}
+// Scroll animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible') });
+}, {threshold: 0.1});
+document.querySelectorAll('.card').forEach(c => observer.observe(c));
 
-// Open links
-function open(url) {
-  if (window.Telegram && window.Telegram.WebApp) {
-    Telegram.WebApp.openLink(url);
-  } else {
-    window.open(url, '_blank');
+// Countdown timer (48h)
+(function(){
+  const KEY = 'aiden_end';
+  let end = localStorage.getItem(KEY);
+  if(!end || new Date(end) < new Date()){
+    end = new Date(Date.now() + 48*3600000).toISOString();
+    localStorage.setItem(KEY, end);
   }
-}
-
-// Countdown timer (48 hours from now)
-function updateTimer() {
-  const end = new Date();
-  end.setHours(end.getHours() + 48);
-  const stored = localStorage.getItem('aiden_timer');
-  const target = stored ? new Date(stored) : end;
-  if (!stored) localStorage.setItem('aiden_timer', target.toISOString());
-
-  function tick() {
-    const now = new Date();
-    const diff = target - now;
-    if (diff <= 0) {
-      document.getElementById('timer').textContent = '🔥 Акция завершена';
-      return;
-    }
-    const h = Math.floor(diff / 3600000);
-    const m = Math.floor((diff % 3600000) / 60000);
-    const s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('timer').textContent =
-      `⏰ Цена повышается через ${h}ч ${m}мин ${s}с`;
+  function tick(){
+    const diff = new Date(end) - Date.now();
+    if(diff <= 0){ document.getElementById('timer').textContent = '00:00:00'; return; }
+    const h = String(Math.floor(diff/3600000)).padStart(2,'0');
+    const m = String(Math.floor(diff%3600000/60000)).padStart(2,'0');
+    const s = String(Math.floor(diff%60000/1000)).padStart(2,'0');
+    document.getElementById('timer').textContent = h+':'+m+':'+s;
   }
-  tick();
-  setInterval(tick, 1000);
-}
-updateTimer();
+  tick(); setInterval(tick, 1000);
+})();
 </script>
 </body>
 </html>
